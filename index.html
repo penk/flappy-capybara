@@ -1,0 +1,101 @@
+<html>
+<head>
+    <script>
+function draw() {
+    
+    window.requestAnimationFrame=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.msRequestAnimationFrame||window.oRequestAnimationFrame||function(f){window.setTimeout(f,1e3/60)}}();
+
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width = window.innerWidth;
+    var H = canvas.height = window.innerHeight;
+    
+    window.addEventListener("keydown", handle, true);
+
+    function handle() {
+        vy = -8;
+    }
+
+    // Velocity x
+    var vx = 0;
+    // Velocity y
+    var vy = -5; 
+    
+    var gravity = 0.5;
+    
+    function Ball() {
+        this.radius = 50;
+        this.x = canvas.width / 2;
+        this.y = 200; 
+        
+        var img = new Image();
+        img.src = "tammy.png";
+
+        this.draw = function(ctx) {
+            ctx.drawImage(img, this.x, this.y, 120, 120);
+        }
+    }
+    
+    function Pipe() {
+        this.x = canvas.width;
+        this.y = 0;
+        this.draw = function(ctx) {
+            ctx.fillStyle = 'green';
+            ctx.fillRect(this.x, this.y, 50, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(this.x, 200, 50, 200); // y position, height
+        }
+    }
+    var ball = new Ball();
+    var pipe = new Pipe();
+    
+    (function renderFrame() {
+        requestAnimationFrame(renderFrame);
+        
+        vy += gravity;
+        
+        ball.x += vx;
+        ball.y += vy;
+        
+        pipe.x -= 5;
+        if (pipe.x < 0) pipe.x = canvas.width;
+
+        if (!gameover) {
+            ctx.clearRect(0, 0, W, H);
+            pipe.draw(ctx);
+            ball.draw(ctx);
+        }
+
+        if (ball.x < pipe.x + 50 && ball.x > pipe.x && (ball.y < 200 || ball.y > 300 ) ) {
+            console.log('game over');
+            ctx.font="40px helvetica"; 
+            ctx.fillStyle='black';
+            ctx.fillText("Game Over", canvas.width/2, canvas.height/2);
+            gameover = true;
+        }
+
+    }());
+
+};
+    var gameover = false;
+    </script>
+    <style>
+    * {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
+}
+    </style>
+</head>
+<body onload="draw()">
+    <canvas id="canvas"></canvas>
+</body>
+</html>
