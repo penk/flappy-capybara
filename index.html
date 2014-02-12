@@ -23,16 +23,18 @@ function draw() {
     
     var gravity = 0.5;
     
-    function Ball() {
+    function Capybara() {
         this.radius = 50;
         this.x = canvas.width / 2;
         this.y = 200; 
+        this.height = 60;
+        this.width = 80;
         
         var img = new Image();
         img.src = "tammy.png";
 
         this.draw = function(ctx) {
-            ctx.drawImage(img, this.x, this.y, 120, 120);
+            ctx.drawImage(img, this.x, this.y, this.width, this.height);
         }
     }
     
@@ -41,14 +43,15 @@ function draw() {
         this.y = 0;
         this.holey = 200
         this.holeh = 200   // height of hole
+        this.width = 50
         this.draw = function(ctx) {
             ctx.fillStyle = 'green';
-            ctx.fillRect(this.x, this.y, 50, canvas.height);
+            ctx.fillRect(this.x, this.y, this.width, canvas.height);
             ctx.fillStyle = 'white';
-            ctx.fillRect(this.x, this.holey, 50, this.holeh); // y position, height
+            ctx.fillRect(this.x, this.holey, this.width, this.holeh); // y position, height
         }
     }
-    var ball = new Ball();
+    var ball = new Capybara();
     var pipe = new Pipe();
     
     (function renderFrame() {
@@ -60,14 +63,6 @@ function draw() {
         ball.y += vy;
         
         pipe.x -= 5;
-        if (pipe.x < 0) {
-            pipe.x = canvas.width;
-
-            // update y position of hole
-            pipe.holey = Math.floor((Math.random()*1000))%H - pipe.holeh;
-            if (pipe.holey < 0)
-                pipe.holey = 0;
-        }
 
         if (!gameover) {
             ctx.clearRect(0, 0, W, H);
@@ -75,18 +70,27 @@ function draw() {
             ball.draw(ctx);
         }
 
-        if (ball.x < pipe.x + 50 && ball.x > pipe.x && (ball.y < 200 || ball.y > 300 ) ) {
+        if (ball.x < pipe.x + pipe.width && ball.x > pipe.x && (ball.y < pipe.holey || ball.y > pipe.holey + pipe.holeh) ) {
             console.log('game over');
             ctx.font="40px helvetica"; 
             ctx.fillStyle='black';
             ctx.fillText("Game Over", canvas.width/2, canvas.height/2);
             gameover = true;
-        }
+        } 
 
+        if (pipe.x < -pipe.width) { // reach the left edge 
+            pipe.x = canvas.width;
+
+            // update y position of hole
+            pipe.holey = Math.floor((Math.random()*1000))%H - pipe.holeh;
+            if (pipe.holey < 0)
+                pipe.holey = 0;
+        }
     }());
 
 };
     var gameover = false;
+    var count = 0;
     </script>
     <style>
     * {
