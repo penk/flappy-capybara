@@ -39,11 +39,13 @@ function draw() {
     function Pipe() {
         this.x = canvas.width;
         this.y = 0;
+        this.holey = 200
+        this.holeh = 200   // height of hole
         this.draw = function(ctx) {
             ctx.fillStyle = 'green';
             ctx.fillRect(this.x, this.y, 50, canvas.height);
             ctx.fillStyle = 'white';
-            ctx.fillRect(this.x, 200, 50, 200); // y position, height
+            ctx.fillRect(this.x, this.holey, 50, this.holeh); // y position, height
         }
     }
     var ball = new Ball();
@@ -58,7 +60,14 @@ function draw() {
         ball.y += vy;
         
         pipe.x -= 5;
-        if (pipe.x < 0) pipe.x = canvas.width;
+        if (pipe.x < 0) {
+            pipe.x = canvas.width;
+
+            // update y position of hole
+            pipe.holey = Math.floor((Math.random()*1000))%H - pipe.holeh;
+            if (pipe.holey < 0)
+                pipe.holey = 0;
+        }
 
         if (!gameover) {
             ctx.clearRect(0, 0, W, H);
